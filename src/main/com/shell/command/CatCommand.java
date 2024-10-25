@@ -1,6 +1,5 @@
-package com.shell;
+package com.shell.command;
 
-import com.shell.command.Command;
 import com.shell.util.FileUtils;
 
 import java.io.*;

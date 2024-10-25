@@ -1,6 +1,5 @@
-package com.shell;
+package com.shell.command;
 
-import com.shell.command.Command;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
