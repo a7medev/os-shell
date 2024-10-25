@@ -30,9 +30,10 @@ public class CatCommand implements Command {
             return;
         }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                outputWriter.println(line);
+        try (InputStream inputStream = new FileInputStream(file)) {
+            int data;
+            while ((data = inputStream.read()) != -1) {
+                outputWriter.write(data);
             }
         } catch (FileNotFoundException e) {
             errorWriter.println(NAME + ": " + filePath + ": No such file or directory");
