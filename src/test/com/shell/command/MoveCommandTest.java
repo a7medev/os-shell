@@ -86,7 +86,7 @@ class MoveCommandTest {
     }
 
     @Test
-    void givenTwoDirectoriesWhenTargetDoesNotExistThenRenamesDirectory() throws IOException {
+    void givenTwoDirectoriesWhenTargetDoesNotExistThenRenamesDirectory() {
         Path newDir = workingDirectory.resolve("newDirectory");
 
         Command command = new MoveCommand(
