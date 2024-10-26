@@ -10,24 +10,18 @@ import java.util.Scanner;
 public class MoveCommand implements Command {
     public static final String NAME = "mv";
 
-    List<String> filePaths;
-    String workingDirectory;
-    PrintWriter outputWriter;
-    PrintWriter errorWriter;
-    Scanner inputScanner;
-    boolean force;
+    private final List<String> filePaths;
+    private final String workingDirectory;
+    private final boolean force;
 
-    public MoveCommand(List<String> filePaths, boolean force, String workingDirectory, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
+    public MoveCommand(List<String> filePaths, boolean force, String workingDirectory) {
         this.filePaths = filePaths;
         this.force = force;
         this.workingDirectory = workingDirectory;
-        this.outputWriter = outputWriter;
-        this.errorWriter = errorWriter;
-        this.inputScanner = inputScanner;
     }
 
     @Override
-    public void execute() {
+    public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         if (filePaths.size() < 2) {
             errorWriter.println("usage: mv [-f] source target");
             errorWriter.println("       mv [-f] source ... directory");
@@ -44,7 +38,7 @@ public class MoveCommand implements Command {
         String targetPath = filePaths.get(1);
 
         if (files.size() == 2 && source.isFile() && (target.isFile() || !target.exists())) {
-            if (target.exists() && !confirmOverwrite(targetPath)) {
+            if (target.exists() && !confirmOverwrite(targetPath, outputWriter, inputScanner)) {
                 return;
             }
 
@@ -71,16 +65,16 @@ public class MoveCommand implements Command {
                 File file = files.get(i);
                 String filePath = filePaths.get(i);
 
-                moveToDirectory(file, directory, filePath, directoryPath);
+                moveToDirectory(file, directory, filePath, directoryPath, outputWriter, errorWriter, inputScanner);
             }
         }
     }
 
-    private void moveToDirectory(File file, File directory, String filePath, String directoryPath) {
+    private void moveToDirectory(File file, File directory, String filePath, String directoryPath, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         File destination = new File(directory, file.getName());
         String relativeFilePath = new File(directoryPath, filePath).toString();
 
-        if (destination.exists() && !confirmOverwrite(relativeFilePath)) {
+        if (destination.exists() && !confirmOverwrite(relativeFilePath, outputWriter, inputScanner)) {
             return;
         }
 
@@ -91,7 +85,7 @@ public class MoveCommand implements Command {
         }
     }
 
-    private boolean confirmOverwrite(String fileName) {
+    private boolean confirmOverwrite(String fileName, PrintWriter outputWriter, Scanner inputScanner) {
         if (force) {
             return true;
         }

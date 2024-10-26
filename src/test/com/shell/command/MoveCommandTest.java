@@ -53,6 +53,7 @@ class MoveCommandTest {
         FileUtils.deleteDirectory(workingDirectory);
         outputWriter.close();
         errorWriter.close();
+        inputScanner.close();
     }
 
     @Test
@@ -60,12 +61,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString(), file2.toString()),
                 true, // force overwrite
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(file1)).isFalse();
         assertThat(Files.exists(file2)).isTrue();
@@ -79,12 +77,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(directory1.toString(), directory2.toString()),
                 true,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(nestedDir)).isTrue();
         assertThat(Files.exists(directory1)).isFalse();
@@ -97,12 +92,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(directory1.toString(), newDir.toString()),
                 true,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(newDir)).isTrue();
         assertThat(Files.exists(directory1)).isFalse();
@@ -116,12 +108,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString(), file2.toString(), targetDir.toString()),
                 true,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(targetDir.resolve(file1.getFileName()))).isTrue();
         assertThat(Files.exists(targetDir.resolve(file2.getFileName()))).isTrue();
@@ -134,12 +123,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString(), file2.toString(), file1.toString()), // file1 is not a directory
                 true,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(errorStringWriter.toString()).contains("mv: " + file1 + " is not a directory");
         assertThat(Files.exists(file1)).isTrue();
@@ -151,12 +137,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString()),
                 true,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(errorStringWriter.toString()).contains("usage: mv [-f] source target");
     }
@@ -167,12 +150,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString(), file2.toString()),
                 false,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).contains(file2.toString() + " already exists, do you want to overwrite it? (y/N)");
         assertThat(Files.exists(file1)).isFalse();
@@ -186,12 +166,9 @@ class MoveCommandTest {
         Command command = new MoveCommand(
                 List.of(file1.toString(), file2.toString()),
                 false,
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter,
-                inputScanner);
+                workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).contains(file2.toString() + " already exists, do you want to overwrite it? (y/N)");
         assertThat(Files.exists(file1)).isTrue();

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -26,6 +27,7 @@ class CatCommandTest {
     StringWriter errorStringWriter;
     PrintWriter outputWriter;
     PrintWriter errorWriter;
+    Scanner inputScanner;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -38,6 +40,7 @@ class CatCommandTest {
         errorStringWriter = new StringWriter();
         outputWriter = new PrintWriter(outputStringWriter);
         errorWriter = new PrintWriter(errorStringWriter);
+        inputScanner = new Scanner("");
     }
 
     @AfterEach
@@ -46,17 +49,14 @@ class CatCommandTest {
         Files.delete(workingDirectory);
         outputWriter.close();
         errorWriter.close();
+        inputScanner.close();
     }
 
     @Test
     void whenFileExistsGivenFilePathCatOutputsFileContents() {
-        Command command = new CatCommand(
-                filePath.toString(),
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter);
+        Command command = new CatCommand(filePath.toString(), workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEqualTo(FILE_CONTENT);
         assertThat(errorStringWriter.toString()).isEmpty();
@@ -64,13 +64,9 @@ class CatCommandTest {
 
     @Test
     void whenFileDoesNotExistGivenFilePathCatOutputsAnError() {
-        Command command = new CatCommand(
-                "non-existent.txt",
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter);
+        Command command = new CatCommand("non-existent.txt", workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("No such file or directory");
@@ -78,13 +74,9 @@ class CatCommandTest {
 
     @Test
     void whenFilePathIsADirectoryGivenFilePathCatOutputsAnError() {
-        Command command = new CatCommand(
-                "./",
-                workingDirectory.toString(),
-                outputWriter,
-                errorWriter);
+        Command command = new CatCommand("./", workingDirectory.toString());
 
-        command.execute();
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("Is a directory");

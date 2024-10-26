@@ -13,35 +13,44 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TouchCommandTest {
     Path workingDirectory;
 
+    StringWriter outputStringWriter;
+    PrintWriter outputWriter;
     StringWriter errorStringWriter;
     PrintWriter errorWriter;
+    Scanner inputScanner;
 
     @BeforeEach
     void setUp() throws IOException {
         workingDirectory = Files.createTempDirectory("working-directory");
 
+        outputStringWriter = new StringWriter();
+        outputWriter = new PrintWriter(outputStringWriter);
         errorStringWriter = new StringWriter();
         errorWriter = new PrintWriter(errorStringWriter);
+        inputScanner = new Scanner("");
     }
 
     @AfterEach
     void tearDown() throws IOException {
         FileUtils.deleteDirectory(workingDirectory);
+        outputWriter.close();
         errorWriter.close();
+        inputScanner.close();
     }
 
     @Test
     void whenParentDirectoryExistsGivenFilePathsTouchCreatesFiles() {
         List<String> files = Arrays.asList("file1.txt", "index.html", "style.css");
 
-        Command command = new TouchCommand(files, workingDirectory.toString(), errorWriter);
-        command.execute();
+        Command command = new TouchCommand(files, workingDirectory.toString());
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(errorStringWriter.toString()).isEmpty();
         assertThat(files).allSatisfy((file) -> assertThat(Files.exists(workingDirectory.resolve(file))).isTrue());
@@ -54,8 +63,8 @@ class TouchCommandTest {
         List<String> files = new ArrayList<>(invalidFiles);
         files.addAll(validFiles);
 
-        Command command = new TouchCommand(files, workingDirectory.toString(), errorWriter);
-        command.execute();
+        Command command = new TouchCommand(files, workingDirectory.toString());
+        command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(validFiles).allSatisfy((file) -> assertThat(Files.exists(workingDirectory.resolve(file))).isTrue());
         assertThat(invalidFiles).allSatisfy((file) -> {

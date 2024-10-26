@@ -3,6 +3,7 @@ package com.shell.command;
 import com.shell.util.FileUtils;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class CatCommand implements Command {
 
@@ -10,18 +11,14 @@ public class CatCommand implements Command {
 
     private final String filePath;
     private final String workingDirectory;
-    private final PrintWriter outputWriter;
-    private final PrintWriter errorWriter;
 
-    public CatCommand(String filePath, String workingDirectory, PrintWriter outputWriter, PrintWriter errorWriter) {
+    public CatCommand(String filePath, String workingDirectory) {
         this.filePath = filePath;
         this.workingDirectory = workingDirectory;
-        this.outputWriter = outputWriter;
-        this.errorWriter = errorWriter;
     }
 
     @Override
-    public void execute() {
+    public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         File file = FileUtils.fileInWorkingDirectory(filePath, workingDirectory);
 
         if (file.isDirectory()) {
