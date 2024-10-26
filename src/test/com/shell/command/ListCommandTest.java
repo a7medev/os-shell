@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LsCommandTest {
+class ListCommandTest {
     Path workingDirectory;
     Path subdirectory;
 
@@ -54,7 +54,7 @@ class LsCommandTest {
     void whenDirectoryExistsLsListsFiles() {
         List<String> directories = List.of(workingDirectory.toString());
 
-        Command command = new LsCommand(directories, workingDirectory.toString());
+        Command command = new ListCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         String output = outputStringWriter.toString();
@@ -66,7 +66,7 @@ class LsCommandTest {
     void whenSubdirectorySpecifiedLsListsFilesInSubdirectory() {
         List<String> directories = List.of(subdirectory.toString());
 
-        Command command = new LsCommand(directories, workingDirectory.toString());
+        Command command = new ListCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         String output = outputStringWriter.toString();
@@ -79,7 +79,7 @@ class LsCommandTest {
     void whenDirectoryDoesNotExistLsShowsError() {
         List<String> directories = List.of(workingDirectory.resolve("nonexistent").toString());
 
-        Command command = new LsCommand(directories, workingDirectory.toString());
+        Command command = new ListCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
