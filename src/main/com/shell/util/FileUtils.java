@@ -1,6 +1,11 @@
 package com.shell.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class FileUtils {
 
@@ -20,5 +25,18 @@ public class FileUtils {
         }
 
         return new File(workingDirectory, path);
+    }
+
+    public static void deleteDirectory(Path directory) throws IOException {
+        try (Stream<Path> stream = Files.walk(directory)) {
+                stream.sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        }
     }
 }
