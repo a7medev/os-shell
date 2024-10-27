@@ -15,7 +15,7 @@ public class Lexer {
     }
 
     List<Token> getTokens() {
-        while(!isAtEnd()) {
+        while (!isAtEnd()) {
             start = current;
             getToken();
         }
@@ -27,26 +27,26 @@ public class Lexer {
 
         switch (c) {
             case '>':
-                addToken(TokenType.OPERATOR ,match('>') ? ">>" :">");
+                addToken(TokenType.OPERATOR, match('>') ? ">>" : ">");
                 break;
             case '<':
-                addToken(TokenType.OPERATOR ,match('<') ? "<<" :"<");
+                addToken(TokenType.OPERATOR, match('<') ? "<<" : "<");
                 break;
             case '|':
-                addToken(TokenType.OPERATOR ,"|");
+                addToken(TokenType.OPERATOR, "|");
                 isNextCommand = true;
                 break;
             case '\\':
-                while(peek() != ' ' && !isAtEnd()) {
+                while (peek() != ' ' && !isAtEnd()) {
                     advance();
                 }
-                if(isAtEnd()) {
-                    addToken(TokenType.PARAMETER ,"\\");
+                if (isAtEnd()) {
+                    addToken(TokenType.PARAMETER, "\\");
                     break;
                 }
                 advance();
                 String escapedChars = source.substring(start + 1, current - 1);
-                addToken(TokenType.PARAMETER ,escapedChars);
+                addToken(TokenType.PARAMETER, escapedChars);
                 break;
             case '"':
                 addQuotedTextToken('"');
@@ -57,15 +57,15 @@ public class Lexer {
             case ' ':
                 break;
             default:
-                while(peek() != ' ' && !isAtEnd()) {
+                while (peek() != ' ' && !isAtEnd()) {
                     advance();
                 }
                 String text = source.substring(start, current);
                 advance();
-                if(isNextCommand) {
+                if (isNextCommand) {
                     addToken(TokenType.COMMAND, text);
                     isNextCommand = false;
-                } else if(text.charAt(0) == '-') {
+                } else if (text.charAt(0) == '-') {
                     addFlagToken(text);
                 } else {
                     addToken(TokenType.PARAMETER, text);
@@ -78,42 +78,42 @@ public class Lexer {
     }
 
     private void addQuotedTextToken(char quote) {
-        while(peek() != quote && !isAtEnd()) {
+        while (peek() != quote && !isAtEnd()) {
             advance();
         }
-        if(isAtEnd()) {
+        if (isAtEnd()) {
             System.err.println("Unterminated String");
             return;
         }
         advance();
-        addToken(TokenType.PARAMETER ,source.substring(start + 1, current - 1));
+        addToken(TokenType.PARAMETER, source.substring(start + 1, current - 1));
     }
 
     private void addFlagToken(String text) {
-        if(text.length() > 2 && text.charAt(1) == '-') {
+        if (text.length() > 2 && text.charAt(1) == '-') {
             addToken(TokenType.FLAG, text.substring(2));
-        } else if(text.length() >= 2) {
-            for(int i = 1; i < text.length(); i++) {
+        } else if (text.length() >= 2) {
+            for (int i = 1; i < text.length(); i++) {
                 addToken(TokenType.FLAG, text.charAt(i) + "");
             }
         } else {
-           addToken(TokenType.PARAMETER, text);
+            addToken(TokenType.PARAMETER, text);
         }
     }
 
     private char advance() {
-        if(isAtEnd()) {
+        if (isAtEnd()) {
             return '\0';
         }
         return source.charAt(current++);
     }
 
     private boolean match(char expectedChar) {
-        if(isAtEnd()) {
+        if (isAtEnd()) {
             return false;
         }
-        if(expectedChar != source.charAt(current)) {
-           return false;
+        if (expectedChar != source.charAt(current)) {
+            return false;
         }
 
         current++;
@@ -121,7 +121,7 @@ public class Lexer {
     }
 
     private char peek() {
-        if(isAtEnd()) {
+        if (isAtEnd()) {
             return '\0';
         }
         return source.charAt(current);
