@@ -1,9 +1,6 @@
 package com.shell;
 
-import com.shell.command.CatCommand;
-import com.shell.command.Command;
-import com.shell.command.MoveCommand;
-import com.shell.command.TouchCommand;
+import com.shell.command.*;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -22,12 +19,20 @@ public class CommandLineInterpreter {
 
     public CommandLineInterpreter(String workingDirectory, String user, String home, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         this.workingDirectory = workingDirectory;
-        this.shortWorkingDirectory = workingDirectory.replaceFirst(home, "~");
+        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
         this.user = user;
         this.home = home;
         this.outputWriter = outputWriter;
         this.errorWriter = errorWriter;
         this.inputScanner = inputScanner;
+    }
+
+    private String getShortWorkingDirectory(String workingDirectory, String home) {
+        if (workingDirectory.startsWith(home)) {
+            return "~" + workingDirectory.substring(home.length());
+        }
+
+        return workingDirectory;
     }
 
     public boolean getIsRunning() {
@@ -63,6 +68,7 @@ public class CommandLineInterpreter {
     private Command createCommand(String command, List<String> arguments) {
         return switch (command) {
             case "mv" -> new MoveCommand(arguments, false, workingDirectory);
+            case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
             case "cat" -> new CatCommand(arguments.get(0), workingDirectory);
             case "touch" -> new TouchCommand(arguments, workingDirectory);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
