@@ -40,9 +40,19 @@ public class Lexer {
                 while(peek() != ' ' && !isAtEnd()) {
                     advance();
                 }
-                String escapedChars = source.substring(start + 1, current - 1);
+                if(isAtEnd()) {
+                    addToken(TokenType.PARAMETER ,"\\");
+                    break;
+                }
                 advance();
+                String escapedChars = source.substring(start + 1, current - 1);
                 addToken(TokenType.PARAMETER ,escapedChars);
+                break;
+            case '"':
+                addQuotedTextToken('"');
+                break;
+            case '\'':
+                addQuotedTextToken('\'');
                 break;
             case ' ':
                 break;
@@ -50,13 +60,13 @@ public class Lexer {
                 while(peek() != ' ' && !isAtEnd()) {
                     advance();
                 }
-                String text = source.substring(start, current - 1);
+                String text = source.substring(start, current);
                 advance();
                 if(isNextCommand) {
                     addToken(TokenType.COMMAND, text);
                     isNextCommand = false;
                 } else if(text.charAt(0) == '-') {
-                    addToken(TokenType.FLAG, text);
+                    addFlagToken(text);
                 } else {
                     addToken(TokenType.PARAMETER, text);
                 }
@@ -67,7 +77,34 @@ public class Lexer {
         tokens.add(new Token(type, value));
     }
 
+    private void addQuotedTextToken(char quote) {
+        while(peek() != quote && !isAtEnd()) {
+            advance();
+        }
+        if(isAtEnd()) {
+            System.err.println("Unterminated String");
+            return;
+        }
+        advance();
+        addToken(TokenType.PARAMETER ,source.substring(start + 1, current - 1));
+    }
+
+    private void addFlagToken(String text) {
+        if(text.length() > 2 && text.charAt(1) == '-') {
+            addToken(TokenType.FLAG, text.substring(2));
+        } else if(text.length() >= 2) {
+            for(int i = 1; i < text.length(); i++) {
+                addToken(TokenType.FLAG, text.charAt(i) + "");
+            }
+        } else {
+           addToken(TokenType.PARAMETER, text);
+        }
+    }
+
     private char advance() {
+        if(isAtEnd()) {
+            return '\0';
+        }
         return source.charAt(current++);
     }
 
