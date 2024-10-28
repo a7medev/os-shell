@@ -1,4 +1,4 @@
-package com.shell;
+package com.shell.parser;
 
 import java.util.ArrayList;
 import java.util.List;

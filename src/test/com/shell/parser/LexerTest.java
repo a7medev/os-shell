@@ -1,4 +1,4 @@
-package com.shell;
+package com.shell.parser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

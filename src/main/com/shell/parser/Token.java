@@ -1,4 +1,4 @@
-package com.shell;
+package com.shell.parser;
 
 public class Token {
     final TokenType type;
