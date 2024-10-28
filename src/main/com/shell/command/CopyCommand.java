@@ -2,21 +2,20 @@ package com.shell.command;
 
 import com.shell.util.FileUtils;
 
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Scanner;
 
 import static com.shell.util.ConfirmationUtils.confirmOverwrite;
 
-public class MoveCommand implements Command {
-    public static final String NAME = "mv";
+public class CopyCommand implements Command {
+    public static final String NAME = "cp";
 
     private final List<String> filePaths;
     private final String workingDirectory;
     private final boolean force;
 
-    public MoveCommand(List<String> filePaths, boolean force, String workingDirectory) {
+    public CopyCommand(List<String> filePaths, boolean force, String workingDirectory) {
         this.filePaths = filePaths;
         this.force = force;
         this.workingDirectory = workingDirectory;
@@ -25,8 +24,8 @@ public class MoveCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         if (filePaths.size() < 2) {
-            errorWriter.println("usage: mv [-f] source target");
-            errorWriter.println("       mv [-f] source ... directory");
+            errorWriter.println("usage: cp [-f] source target");
+            errorWriter.println("       cp [-f] source ... directory");
             return;
         }
 
@@ -42,22 +41,22 @@ public class MoveCommand implements Command {
                 return;
             }
 
-            boolean renameSucceeded = source.renameTo(target);
-
-            if (!renameSucceeded) {
-                errorWriter.println(NAME + ": failed to move " + sourcePath + " to " + targetPath);
-            }
-        } else if (files.size() == 2 && source.isDirectory() && !target.exists()) {
-            boolean renameSucceeded = source.renameTo(target);
-
-            if (!renameSucceeded) {
+            try {
+                FileUtils.copy(source, target);
+            } catch (FileNotFoundException e) {
+                errorWriter.println(NAME + ": " + sourcePath + ": no such file");
+            } catch (IOException e) {
                 errorWriter.println(NAME + ": failed to move " + sourcePath + " to " + targetPath);
             }
         } else {
             File directory = files.get(files.size() - 1);
             String directoryPath = filePaths.get(files.size() - 1);
-            if (!directory.isDirectory() || !directory.exists()) {
-                errorWriter.println(NAME + ": " + directoryPath + " is not a directory");
+            if (!directory.exists()) {
+                errorWriter.println(NAME + ": " + directoryPath + ": no such file or directory");
+                return;
+            }
+            if (!directory.isDirectory()) {
+                errorWriter.println(NAME + ": " + directoryPath + ": is not a directory");
                 return;
             }
 
@@ -65,12 +64,12 @@ public class MoveCommand implements Command {
                 File file = files.get(i);
                 String filePath = filePaths.get(i);
 
-                moveToDirectory(file, directory, filePath, directoryPath, outputWriter, errorWriter, inputScanner);
+                copyToDirectory(file, directory, filePath, directoryPath, outputWriter, errorWriter, inputScanner);
             }
         }
     }
 
-    private void moveToDirectory(File file, File directory, String filePath, String directoryPath, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
+    private void copyToDirectory(File file, File directory, String filePath, String directoryPath, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         File destination = new File(directory, file.getName());
         String relativeFilePath = new File(directoryPath, filePath).toString();
 
@@ -78,10 +77,12 @@ public class MoveCommand implements Command {
             return;
         }
 
-        boolean renameSucceeded = file.renameTo(destination);
-
-        if (!renameSucceeded) {
-            errorWriter.println(NAME + ": failed to move " + filePath + " into " + directoryPath);
+        try {
+            FileUtils.copy(file, destination);
+        } catch (FileNotFoundException e) {
+            errorWriter.println(NAME + ": " + filePath + ": no such file");
+        } catch (IOException e) {
+            errorWriter.println(NAME + ": failed to copy " + filePath + " to " + directoryPath);
         }
     }
 }
