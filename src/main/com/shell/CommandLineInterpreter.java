@@ -19,13 +19,20 @@ public class CommandLineInterpreter {
 
     public CommandLineInterpreter(String workingDirectory, String user, String home, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         this.workingDirectory = workingDirectory;
-//        this.shortWorkingDirectory = workingDirectory.replaceFirst(home, "~");
-        this.shortWorkingDirectory = workingDirectory;
+        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
         this.user = user;
         this.home = home;
         this.outputWriter = outputWriter;
         this.errorWriter = errorWriter;
         this.inputScanner = inputScanner;
+    }
+
+    private String getShortWorkingDirectory(String workingDirectory, String home) {
+        if (workingDirectory.startsWith(home)) {
+            return "~" + workingDirectory.substring(home.length());
+        }
+
+        return workingDirectory;
     }
 
     public boolean getIsRunning() {
@@ -64,6 +71,7 @@ public class CommandLineInterpreter {
             case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
             case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
             case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
+            case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;

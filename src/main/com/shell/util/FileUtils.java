@@ -1,10 +1,10 @@
 package com.shell.util;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class FileUtils {
@@ -27,6 +27,12 @@ public class FileUtils {
         return new File(workingDirectory, path);
     }
 
+    public static List<File> filesInWorkingDirectory(List<String> filePaths, String workingDirectory) {
+        return filePaths.stream()
+                .map(path -> fileInWorkingDirectory(path, workingDirectory))
+                .toList();
+    }
+
     public static void deleteDirectory(Path directory) throws IOException {
         try (Stream<Path> stream = Files.walk(directory)) {
                 stream.sorted(Comparator.reverseOrder())
@@ -37,6 +43,16 @@ public class FileUtils {
                             throw new RuntimeException(e);
                         }
                     });
+        }
+    }
+
+    public static void copy(File source, File target) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(source);
+             FileOutputStream outputStream = new FileOutputStream(target)) {
+            int data;
+            while ((data = inputStream.read()) != -1) {
+                outputStream.write(data);
+            }
         }
     }
 }
