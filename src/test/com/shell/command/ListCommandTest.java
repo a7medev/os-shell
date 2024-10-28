@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Collections;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,7 @@ class ListCommandTest {
         // Create sample files
         Files.createFile(workingDirectory.resolve("file1.txt"));
         Files.createFile(workingDirectory.resolve("file2.txt"));
+        Files.createFile(workingDirectory.resolve(".hiddenfile"));
         Files.createFile(subdirectory.resolve("file3.txt"));
 
         outputStringWriter = new StringWriter();
@@ -51,35 +53,79 @@ class ListCommandTest {
     }
 
     @Test
-    void whenDirectoryExistsLsListsFiles() {
-        List<String> directories = List.of(workingDirectory.toString());
+    void whenDirectoryExistsListCommandListsFiles() {
+        List<String> arguments = List.of();
 
-        Command command = new ListCommand(directories, workingDirectory.toString());
+        Command command = new ListCommand(arguments, false, false, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         String output = outputStringWriter.toString();
         assertThat(errorStringWriter.toString()).isEmpty();
         assertThat(output).contains("file1.txt", "file2.txt", "subdir");
+        assertThat(output).doesNotContain(".hiddenfile");
     }
 
     @Test
-    void whenSubdirectorySpecifiedLsListsFilesInSubdirectory() {
-        List<String> directories = List.of(subdirectory.toString());
+    void whenDirectoryExistsWithAFlagListCommandListsAllFilesIncludingHidden() {
+        List<String> arguments = List.of();
+        Command command = new ListCommand(arguments, true, false, workingDirectory.toString());
+        command.execute(outputWriter, errorWriter, inputScanner);
 
-        Command command = new ListCommand(directories, workingDirectory.toString());
+        String output = outputStringWriter.toString();
+        assertThat(errorStringWriter.toString()).isEmpty();
+        assertThat(output).contains("file1.txt", "file2.txt", "subdir", ".hiddenfile");
+    }
+
+    @Test
+    void whenDirectoryExistsWithRFlagListCommandListsFilesInReverseOrder() {
+        List<String> arguments = List.of();
+        Command command = new ListCommand(arguments, false, true, workingDirectory.toString());
+        command.execute(outputWriter, errorWriter, inputScanner);
+
+        String output = outputStringWriter.toString();
+        assertThat(errorStringWriter.toString()).isEmpty();
+
+        assertThat(output).isEqualToIgnoringNewLines("""
+                subdir
+                file2.txt
+                file1.txt
+                """);
+    }
+
+    @Test
+    void whenDirectoryExistsWithAAndRFlagsListCommandListsAllFilesInReverseOrderIncludingHidden() {
+        List<String> arguments = List.of();
+        Command command = new ListCommand(arguments, true, true, workingDirectory.toString());
+        command.execute(outputWriter, errorWriter, inputScanner);
+
+        String output = outputStringWriter.toString().trim();
+        assertThat(errorStringWriter.toString()).isEmpty();
+
+        // Check that files are in reverse order and include the hidden file
+        assertThat(output).isEqualToIgnoringNewLines("""
+                subdir
+                file2.txt
+                file1.txt
+                .hiddenfile
+                """);
+    }
+
+    @Test
+    void whenSubdirectorySpecifiedListCommandListsFilesInSubdirectory() {
+        List<String> directories = List.of(subdirectory.toString());
+        Command command = new ListCommand(directories, false, false, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         String output = outputStringWriter.toString();
         assertThat(errorStringWriter.toString()).isEmpty();
         assertThat(output).contains("file3.txt");
-        assertThat(output).doesNotContain("file1.txt", "file2.txt");
+        assertThat(output).doesNotContain("file1.txt", "file2.txt", ".hiddenfile");
     }
 
     @Test
-    void whenDirectoryDoesNotExistLsShowsError() {
+    void whenDirectoryDoesNotExistListCommandShowsError() {
         List<String> directories = List.of(workingDirectory.resolve("nonexistent").toString());
-
-        Command command = new ListCommand(directories, workingDirectory.toString());
+        Command command = new ListCommand(directories, false, false, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
