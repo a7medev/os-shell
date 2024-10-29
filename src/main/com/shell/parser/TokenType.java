@@ -1,5 +1,5 @@
 package com.shell.parser;
 
 public enum TokenType {
-    COMMAND, FLAG, OPERATOR, PARAMETER
+    COMMAND, FLAG, OPERATOR, PARAMETER, EOF
 }

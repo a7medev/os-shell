@@ -19,6 +19,7 @@ public class Lexer {
             start = current;
             getToken();
         }
+        addToken(TokenType.EOF, "");
         return tokens;
     }
 
@@ -30,7 +31,7 @@ public class Lexer {
                 addToken(TokenType.OPERATOR, match('>') ? ">>" : ">");
                 break;
             case '<':
-                addToken(TokenType.OPERATOR, match('<') ? "<<" : "<");
+                addToken(TokenType.OPERATOR, "<");
                 break;
             case '|':
                 addToken(TokenType.OPERATOR, "|");
