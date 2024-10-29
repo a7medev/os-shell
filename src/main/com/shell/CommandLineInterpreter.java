@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CommandLineInterpreter {
-    private final String workingDirectory;
-    private final String shortWorkingDirectory;
+    private String workingDirectory;
+    private String shortWorkingDirectory;
     private final String user;
     private final String home;
     private final PrintWriter outputWriter;
@@ -18,13 +18,21 @@ public class CommandLineInterpreter {
     private boolean isRunning = true;
 
     public CommandLineInterpreter(String workingDirectory, String user, String home, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
-        this.workingDirectory = workingDirectory;
-        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
         this.user = user;
         this.home = home;
         this.outputWriter = outputWriter;
         this.errorWriter = errorWriter;
         this.inputScanner = inputScanner;
+        setWorkingDirectory(workingDirectory);
+    }
+
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
     }
 
     private String getShortWorkingDirectory(String workingDirectory, String home) {
@@ -73,6 +81,7 @@ public class CommandLineInterpreter {
             case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
             case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
             case PrintWorkingDirectoryCommand.NAME -> new PrintWorkingDirectoryCommand(workingDirectory);
+            case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory, this);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;
