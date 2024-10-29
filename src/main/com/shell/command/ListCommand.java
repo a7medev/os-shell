@@ -51,7 +51,7 @@ public class ListCommand implements Command {
                     fileStream = fileStream.filter(file -> !file.startsWith("."));
                 }
 
-                List<String> fileList = new ArrayList<>(fileStream.toList());
+                List<String> fileList = new ArrayList<>(fileStream.sorted().toList());
                 if (reverse) {
                     Collections.reverse(fileList);
                 }
