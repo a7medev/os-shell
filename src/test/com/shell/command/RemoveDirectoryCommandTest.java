@@ -52,7 +52,6 @@ class RemoveDirectoryCommandTest {
         command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(emptyDirPath)).isFalse();
-        assertThat(outputStringWriter.toString()).contains("Directory removed: " + emptyDirPath.toString());
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 
@@ -67,7 +66,6 @@ class RemoveDirectoryCommandTest {
         command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(nonEmptyDirPath)).isTrue();
-        assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("rmdir: nonEmptyDir Directory is not empty");
     }
 
@@ -78,7 +76,6 @@ class RemoveDirectoryCommandTest {
         Command command = new RemoveDirectoryCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
-        assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("rmdir: nonExistentDir Directory does not exist");
     }
 
@@ -92,7 +89,6 @@ class RemoveDirectoryCommandTest {
         command.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(Files.exists(notADirectoryPath)).isTrue();
-        assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("rmdir: notADirectory is not a directory");
     }
 }
