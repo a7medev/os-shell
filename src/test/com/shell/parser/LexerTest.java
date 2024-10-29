@@ -20,8 +20,9 @@ class LexerTest {
         Token command = new Token(TokenType.COMMAND, "echo");
         Token para1 = new Token(TokenType.PARAMETER, "Hello");
         Token para2 = new Token(TokenType.PARAMETER, "World");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1, para2);
+        List<Token> expected = List.of(command, para1, para2, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
@@ -37,8 +38,9 @@ class LexerTest {
         Token para1 = new Token(TokenType.FLAG, "r");
         Token para2 = new Token(TokenType.FLAG, "f");
         Token para3 = new Token(TokenType.PARAMETER, "dir");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1, para2, para3);
+        List<Token> expected = List.of(command, para1, para2, para3, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
@@ -52,8 +54,9 @@ class LexerTest {
 
         Token command = new Token(TokenType.COMMAND, "ls");
         Token para1 = new Token(TokenType.FLAG, "all");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1);
+        List<Token> expected = List.of(command, para1, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
@@ -67,8 +70,9 @@ class LexerTest {
 
         Token command = new Token(TokenType.COMMAND, "echo");
         Token para1 = new Token(TokenType.PARAMETER, "Hello, World!!");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1);
+        List<Token> expected = List.of(command, para1, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
@@ -82,8 +86,9 @@ class LexerTest {
 
         Token command = new Token(TokenType.COMMAND, "echo");
         Token para1 = new Token(TokenType.PARAMETER, "Hello, World!!");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1);
+        List<Token> expected = List.of(command, para1, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
@@ -102,8 +107,43 @@ class LexerTest {
         Token pipe2 = new Token(TokenType.OPERATOR, "|");
         Token command3 = new Token(TokenType.COMMAND, "grep");
         Token para2 = new Token(TokenType.PARAMETER, "3");
+        Token eof = new Token(TokenType.EOF, "");
 
-        List<Token> expected = List.of(command, para1, pipe1, command1, pipe2, command3, para2);
+        List<Token> expected = List.of(command, para1, pipe1, command1, pipe2, command3, para2, eof);
+
+        assertThat(tokens).isEqualTo(expected);
+    }
+
+    @Test
+    void givenSingleRedirectThenTheLexerReturnCorrectTokens() {
+        String SOURCE = "ls > file3";
+        Lexer lexer = new Lexer(SOURCE);
+
+        List<Token> tokens = lexer.getTokens();
+
+        Token command = new Token(TokenType.COMMAND, "ls");
+        Token op1 = new Token(TokenType.OPERATOR, ">");
+        Token para1 = new Token(TokenType.PARAMETER, "file3");
+        Token eof = new Token(TokenType.EOF, "");
+
+        List<Token> expected = List.of(command, op1, para1, eof);
+
+        assertThat(tokens).isEqualTo(expected);
+    }
+
+    @Test
+    void givenDoubleRedirectThenTheLexerReturnCorrectTokens() {
+        String SOURCE = "ls >> file3";
+        Lexer lexer = new Lexer(SOURCE);
+
+        List<Token> tokens = lexer.getTokens();
+
+        Token command = new Token(TokenType.COMMAND, "ls");
+        Token op1 = new Token(TokenType.OPERATOR, ">>");
+        Token para1 = new Token(TokenType.PARAMETER, "file3");
+        Token eof = new Token(TokenType.EOF, "");
+
+        List<Token> expected = List.of(command, op1, para1, eof);
 
         assertThat(tokens).isEqualTo(expected);
     }
