@@ -77,6 +77,7 @@ public class CommandLineInterpreter {
         return switch (command) {
             case MoveCommand.NAME -> new MoveCommand(arguments, false, workingDirectory);
             case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
+            case RemoveCommand.NAME -> new RemoveCommand(arguments, false, true, workingDirectory);
             case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
             case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
             case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
