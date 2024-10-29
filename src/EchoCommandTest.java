@@ -20,7 +20,6 @@ public class EchoCommandTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        System.out.println("setUp worked");
         outputStringWriter = new StringWriter();
         outputWriter = new PrintWriter(outputStringWriter);
         errorStringWriter = new StringWriter();
