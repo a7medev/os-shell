@@ -72,7 +72,11 @@ class ListCommandTest {
 
         String output = outputStringWriter.toString();
         assertThat(errorStringWriter.toString()).isEmpty();
-        assertThat(output).contains("file1.txt", "file2.txt", "subdir", ".hiddenfile");
+        assertThat(output).containsIgnoringNewLines("""
+                .hiddenfile
+                file1.txt
+                file2.txt
+                subdir""");
     }
 
     @Test

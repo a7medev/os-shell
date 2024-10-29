@@ -1,5 +1,6 @@
 package com.shell.command;
 
+import com.shell.CommandLineInterpreter;
 import com.shell.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ class ChangeDirectoryCommandTest {
     PrintWriter errorWriter;
     Scanner inputScanner;
     String currentDirectory;
+    CommandLineInterpreter interpreter;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -37,6 +39,13 @@ class ChangeDirectoryCommandTest {
         errorStringWriter = new StringWriter();
         errorWriter = new PrintWriter(errorStringWriter);
         inputScanner = new Scanner("");
+
+        interpreter = new CommandLineInterpreter(currentDirectory,
+                "user",
+                "/Users/user",
+                outputWriter,
+                errorWriter,
+                inputScanner);
     }
 
     @AfterEach
@@ -49,33 +58,33 @@ class ChangeDirectoryCommandTest {
 
     @Test
     void whenValidDirectoryChangeDirectoryUpdatesCurrentDirectory() {
-        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand(subDirectory.toString(), currentDirectory);
+        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand(subDirectory.toString(), currentDirectory, interpreter);
 
         changeDirectoryCommand.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(errorStringWriter.toString()).isEmpty();
-        assertThat(changeDirectoryCommand.getCurrentDirectory()).isEqualTo(subDirectory.toString());
+        assertThat(interpreter.getWorkingDirectory()).isEqualTo(subDirectory.toString());
     }
 
     @Test
     void whenInvalidDirectoryChangeDirectoryShowsError() {
         String invalidPath = rootDirectory.resolve("nonexistent").toString();
-        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand(invalidPath, currentDirectory);
+        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand(invalidPath, currentDirectory, interpreter);
 
         changeDirectoryCommand.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
-        assertThat(errorStringWriter.toString()).contains("No such directory: " + invalidPath);
-        assertThat(changeDirectoryCommand.getCurrentDirectory()).isEqualTo(currentDirectory);
+        assertThat(errorStringWriter.toString()).contains(invalidPath + ": No such directory");
+        assertThat(interpreter.getWorkingDirectory()).isEqualTo(currentDirectory);
     }
 
     @Test
     void whenParentDirectorySymbolUsedChangeDirectoryGoesToParent() {
-        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand("..", subDirectory.toString());
+        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand("..", subDirectory.toString(), interpreter);
 
         changeDirectoryCommand.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(errorStringWriter.toString()).isEmpty();
-        assertThat(changeDirectoryCommand.getCurrentDirectory()).isEqualTo(rootDirectory.toString());
+        assertThat(interpreter.getWorkingDirectory()).isEqualTo(rootDirectory.toString());
     }
 }
