@@ -1,5 +1,8 @@
 package com.shell.command;
 
+import com.shell.CommandLineInterpreter;
+import com.shell.util.FileUtils;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Path;
@@ -10,36 +13,24 @@ public class ChangeDirectoryCommand implements Command {
     public static final String NAME = "cd";
 
     private final String targetDirectory;
-    private String currentDirectory;
+    private final String workingDirectory;
+    private final CommandLineInterpreter interpreter;
 
-    public ChangeDirectoryCommand(String targetDirectory, String currentDirectory) {
+    public ChangeDirectoryCommand(String targetDirectory, String workingDirectory, CommandLineInterpreter interpreter) {
         this.targetDirectory = targetDirectory;
-        this.currentDirectory = currentDirectory;
-    }
-
-    public String getCurrentDirectory() {
-        return currentDirectory;
+        this.workingDirectory = workingDirectory;
+        this.interpreter = interpreter;
     }
 
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
-        Path newDirectoryPath;
+        File file = FileUtils.fileInWorkingDirectory(targetDirectory, workingDirectory);
 
-        if (targetDirectory.equals("..")) {
-            newDirectoryPath = Paths.get(currentDirectory).getParent();
-        }
-
-        else if (Paths.get(targetDirectory).isAbsolute()) {
-            newDirectoryPath = Paths.get(targetDirectory);
-        }
-        else {
-            newDirectoryPath = Paths.get(currentDirectory).resolve(targetDirectory).normalize();
+        if (!file.exists() || !file.isDirectory()) {
+            errorWriter.println(NAME + ": " + targetDirectory + ": No such directory");
+            return;
         }
 
-        if (newDirectoryPath != null && newDirectoryPath.toFile().exists() && newDirectoryPath.toFile().isDirectory()) {
-            currentDirectory = newDirectoryPath.toString();
-        } else {
-            errorWriter.println("No such directory: " + targetDirectory);
-        }
+        interpreter.setWorkingDirectory(file.toPath().normalize().toString());
     }
 }
