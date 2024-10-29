@@ -1,4 +1,4 @@
-//package com.shell.command;
+package com.shell.command;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +44,6 @@ public class DateCommandTest {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd-MM-yyyy HH:mm:ss");
         assertThat(outputStringWriter.toString()).isEqualTo(now.format(formatter) + "\r\n");
-        //assertThat(errorStringWriter.toString()).isEmpty();
+        assertThat(errorStringWriter.toString()).isEmpty();
     }
 }
