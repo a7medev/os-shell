@@ -75,6 +75,7 @@ public class CommandLineInterpreter {
             case PrintWorkingDirectoryCommand.NAME -> new PrintWorkingDirectoryCommand(workingDirectory);
             case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory); // issue: NOT updating wokingDir with new one
             case MakeDirectoryCommand.NAME -> new MakeDirectoryCommand(arguments, workingDirectory);
+            case RemoveDirectoryCommand.NAME -> new RemoveDirectoryCommand(arguments, workingDirectory);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;
