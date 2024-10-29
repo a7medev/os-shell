@@ -67,10 +67,11 @@ public class CommandLineInterpreter {
 
     private Command createCommand(String command, List<String> arguments) {
         return switch (command) {
-            case "mv" -> new MoveCommand(arguments, false, workingDirectory);
+            case MoveCommand.NAME -> new MoveCommand(arguments, false, workingDirectory);
+            case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
+            case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
+            case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
             case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
-            case "cat" -> new CatCommand(arguments.get(0), workingDirectory);
-            case "touch" -> new TouchCommand(arguments, workingDirectory);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;

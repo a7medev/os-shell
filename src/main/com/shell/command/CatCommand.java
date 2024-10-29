@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class CatCommand implements Command {
 
-    public static String NAME = "cat";
+    public static final String NAME = "cat";
 
     private final String filePath;
     private final String workingDirectory;
