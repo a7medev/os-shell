@@ -8,6 +8,7 @@ public class Main {
         var workingDirectory = System.getProperty("user.dir");
         var home = System.getProperty("user.home");
         var user = System.getProperty("user.name");
+        var kernel = System.getProperty("os.name");
 
         try (var outputWriter = new PrintWriter(System.out);
              var errorWriter = new PrintWriter(outputWriter);
@@ -15,6 +16,7 @@ public class Main {
             var commandLineInterpreter = new CommandLineInterpreter(workingDirectory,
                     user,
                     home,
+                    kernel,
                     outputWriter,
                     errorWriter,
                     inputScanner);
