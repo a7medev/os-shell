@@ -1,5 +1,8 @@
 package com.shell.command;
 
+import com.shell.util.FileUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -22,13 +25,9 @@ public class RemoveDirectoryCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         for (String dir : directories) {
-            Path directoryPath;
 
-            if (Paths.get(dir).isAbsolute()) {
-                directoryPath = Paths.get(dir);
-            } else {
-                directoryPath = Paths.get(workingDirectory).resolve(dir);
-            }
+            File directoryFile = FileUtils.fileInWorkingDirectory(dir, workingDirectory);
+            Path directoryPath = directoryFile.toPath();
 
             try {
                 if (!Files.exists(directoryPath)) {
@@ -39,7 +38,6 @@ public class RemoveDirectoryCommand implements Command {
                     errorWriter.println(NAME + ": " + dir + " Directory is not empty");
                 } else {
                     Files.delete(directoryPath);
-                    outputWriter.println("Directory removed: " + directoryPath);
                 }
             } catch (IOException e) {
                 errorWriter.println(NAME + ": " + dir + ": Failed to remove directory");

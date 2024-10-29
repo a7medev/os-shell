@@ -25,13 +25,15 @@ public class MakeDirectoryCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         for (String dir : directories) {
-            File directoryPath = FileUtils.fileInWorkingDirectory(dir, workingDirectory);
 
+            File directoryFile = FileUtils.fileInWorkingDirectory(dir, workingDirectory);
+            Path directoryPath = directoryFile.toPath();
             try {
-                if (Files.exists(directoryPath.toPath())) {
+                if (Files.exists(directoryPath)) {
                     errorWriter.println(NAME + ": " + dir + ": Directory already exists");
                 } else {
-                    Files.createDirectories(directoryPath.toPath());
+                    Files.createDirectories(directoryPath);
+
                 }
             } catch (IOException e) {
                 errorWriter.println(NAME + ": " + dir + ": Failed to create directory");
