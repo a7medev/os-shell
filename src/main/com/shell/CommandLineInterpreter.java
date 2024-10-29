@@ -3,28 +3,39 @@ package com.shell;
 import com.shell.command.*;
 
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class CommandLineInterpreter {
-    private final String workingDirectory;
-    private final String shortWorkingDirectory;
+    private String workingDirectory;
+    private String shortWorkingDirectory;
     private final String user;
+    private final String kernel;
     private final String home;
     private final PrintWriter outputWriter;
     private final PrintWriter errorWriter;
     private final Scanner inputScanner;
     private boolean isRunning = true;
 
-    public CommandLineInterpreter(String workingDirectory, String user, String home, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
-        this.workingDirectory = workingDirectory;
-        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
+    public CommandLineInterpreter(String workingDirectory, String user, String home, String kernel, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         this.user = user;
         this.home = home;
+        this.kernel = kernel;
         this.outputWriter = outputWriter;
         this.errorWriter = errorWriter;
         this.inputScanner = inputScanner;
+        setWorkingDirectory(workingDirectory);
+    }
+
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
+        this.shortWorkingDirectory = getShortWorkingDirectory(workingDirectory, home);
     }
 
     private String getShortWorkingDirectory(String workingDirectory, String home) {
@@ -69,14 +80,19 @@ public class CommandLineInterpreter {
         return switch (command) {
             case MoveCommand.NAME -> new MoveCommand(arguments, false, workingDirectory);
             case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
+            case RemoveCommand.NAME -> new RemoveCommand(arguments, false, true, workingDirectory);
             case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
             case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
             case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
             case PrintWorkingDirectoryCommand.NAME -> new PrintWorkingDirectoryCommand(workingDirectory);
-            case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory); // issue: NOT updating wokingDir with new one
+            case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory, this);
             case MakeDirectoryCommand.NAME -> new MakeDirectoryCommand(arguments, workingDirectory);
             case RemoveDirectoryCommand.NAME -> new RemoveDirectoryCommand(arguments, workingDirectory);
             case ManualCommand.NAME -> new ManualCommand(arguments.get(0));
+            case UsersCommand.USERS_NAME, UsersCommand.WHO_NAME -> new UsersCommand(user);
+            case UnameCommand.NAME -> new UnameCommand(kernel);
+            case DateCommand.NAME -> new DateCommand(LocalDateTime.now());
+            case EchoCommand.NAME -> new EchoCommand(arguments);
             // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;
