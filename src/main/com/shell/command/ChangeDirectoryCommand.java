@@ -2,6 +2,7 @@ package com.shell.command;
 
 import com.shell.CommandLineInterpreter;
 import com.shell.util.FileUtils;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -22,12 +23,17 @@ public class ChangeDirectoryCommand implements Command {
         this.interpreter = interpreter;
     }
 
+
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         File file = FileUtils.fileInWorkingDirectory(targetDirectory, workingDirectory);
 
         if (!file.exists() || !file.isDirectory()) {
-            errorWriter.println(NAME + ": " + targetDirectory + ": No such directory");
+            errorWriter.println(NAME + ": " + targetDirectory + " No such directory");
+            return;
+        }
+        if(file.toString().equals(workingDirectory+"\\ ")){
+            errorWriter.println(NAME + ": Please specify a directory");
             return;
         }
 

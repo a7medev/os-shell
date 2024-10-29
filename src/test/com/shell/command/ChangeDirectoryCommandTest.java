@@ -75,7 +75,7 @@ class ChangeDirectoryCommandTest {
         changeDirectoryCommand.execute(outputWriter, errorWriter, inputScanner);
 
         assertThat(outputStringWriter.toString()).isEmpty();
-        assertThat(errorStringWriter.toString()).contains(invalidPath + ": No such directory");
+        assertThat(errorStringWriter.toString()).contains(invalidPath + " No such directory");
         assertThat(interpreter.getWorkingDirectory()).isEqualTo(currentDirectory);
     }
 
@@ -87,5 +87,16 @@ class ChangeDirectoryCommandTest {
 
         assertThat(errorStringWriter.toString()).isEmpty();
         assertThat(interpreter.getWorkingDirectory()).isEqualTo(rootDirectory.toString());
+    }
+
+    @Test
+    void whenUserDoesNotSpecifyDirectoryChangeDirectoryShowsError(){
+        ChangeDirectoryCommand changeDirectoryCommand = new ChangeDirectoryCommand(" ", currentDirectory, interpreter);
+
+        changeDirectoryCommand.execute(outputWriter, errorWriter, inputScanner);
+
+        assertThat(outputStringWriter.toString()).isEmpty();
+        assertThat(errorStringWriter.toString()).contains("cd: Please specify a directory");
+        assertThat(interpreter.getWorkingDirectory()).isEqualTo(currentDirectory);
     }
 }
