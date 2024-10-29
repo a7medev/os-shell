@@ -14,6 +14,5 @@ public class PrintWorkingDirectoryCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         outputWriter.println(workingDirectory);
-        outputWriter.flush();
     }
 }
