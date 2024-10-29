@@ -1,5 +1,7 @@
 package com.shell.command;
 
+import com.shell.util.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,20 +25,22 @@ public class MakeDirectoryCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         for (String dir : directories) {
-            Path directoryPath;
+//            Path directoryPath;
+//
+//            if (Paths.get(dir).isAbsolute()) {
+//                directoryPath = Paths.get(dir);
+//            } else {
+//                directoryPath = Paths.get(workingDirectory).resolve(dir);
+//            }
+            File directoryPath = FileUtils.fileInWorkingDirectory(dir, workingDirectory);
 
-            if (Paths.get(dir).isAbsolute()) {
-                directoryPath = Paths.get(dir);
-            } else {
-                directoryPath = Paths.get(workingDirectory).resolve(dir);
-            }
 
             try {
-                if (Files.exists(directoryPath)) {
+                if (Files.exists(directoryPath.toPath())) {
                     errorWriter.println(NAME + ": " + dir + " Directory already exists");
                 } else {
-                    Files.createDirectories(directoryPath);
-                    outputWriter.println("Directory created: " + directoryPath);
+                    Files.createDirectories(directoryPath.toPath());
+//                    outputWriter.println("Directory created: " + directoryPath);
                 }
             } catch (IOException e) {
                 errorWriter.println(NAME + ": " + dir + ": Failed to create directory");
