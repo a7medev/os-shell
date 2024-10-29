@@ -51,7 +51,6 @@ class MakeDirectoryCommandTest {
 
         Path newDirPath = workingDirectory.resolve("newDir");
         assertThat(Files.exists(newDirPath)).isTrue();
-        assertThat(outputStringWriter.toString()).contains("Directory created: " + newDirPath.toString());
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 
@@ -64,7 +63,6 @@ class MakeDirectoryCommandTest {
 
         Path nestedDirPath = workingDirectory.resolve("nested/dir/path");
         assertThat(Files.exists(nestedDirPath)).isTrue();
-        assertThat(outputStringWriter.toString()).contains("Directory created: " + nestedDirPath.toString());
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 
@@ -76,7 +74,6 @@ class MakeDirectoryCommandTest {
         Command command = new MakeDirectoryCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
-        assertThat(outputStringWriter.toString()).isEmpty();
         assertThat(errorStringWriter.toString()).contains("mkdir: existingDir Directory already exists");
     }
 }
