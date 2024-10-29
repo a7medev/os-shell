@@ -74,6 +74,6 @@ class MakeDirectoryCommandTest {
         Command command = new MakeDirectoryCommand(directories, workingDirectory.toString());
         command.execute(outputWriter, errorWriter, inputScanner);
 
-        assertThat(errorStringWriter.toString()).contains("mkdir: existingDir Directory already exists");
+        assertThat(errorStringWriter.toString()).contains("mkdir: existingDir: Directory already exists");
     }
 }
