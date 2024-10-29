@@ -5,19 +5,14 @@ import java.util.Scanner;
 
 public class UnameCommand implements Command {
     public static final String NAME = "uname";
+    private final String kernel;
 
+    public UnameCommand(String kernel) {
+        this.kernel = kernel;
+    }
 
-    //@Override
-    public void execute (PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
-        try {
-            String kernel = System.getProperty("os.name");
-            outputWriter.println(kernel);
-        }
-        catch (SecurityException e) {
-            errorWriter.println("access denied");
-        }
-        catch (NullPointerException | IllegalArgumentException e) {
-            errorWriter.println("provided key is not valid");
-        }
+    @Override
+    public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
+        outputWriter.println(kernel);
     }
 }

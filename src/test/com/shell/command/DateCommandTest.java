@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Month;
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,13 +38,13 @@ public class DateCommandTest {
     }
 
     @Test
-    void printsCurrentDate_inCorrectFormat() {
-        Command test = new DateCommand();
-        test.execute(outputWriter, errorWriter, inputScanner);
+    void givenDateThenOutputsDateInCorrectFormat() {
+        LocalDateTime date = LocalDateTime.of(2024, Month.OCTOBER, 29, 10, 51, 13);
+        Command command = new DateCommand(date);
 
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd-MM-yyyy HH:mm:ss");
-        assertThat(outputStringWriter.toString()).isEqualTo(now.format(formatter) + "\r\n");
+        command.execute(outputWriter, errorWriter, inputScanner);
+
+        assertThat(outputStringWriter.toString()).contains("Tue, 29-10-2024 10:51:13");
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 }

@@ -36,11 +36,13 @@ public class UnameCommandTest {
     }
 
     @Test
-    void printsCorrectOSName() {
-        String OS_name = System.getProperty("os.name");
-        Command test = new UnameCommand();
-        test.execute(outputWriter, errorWriter, inputScanner);
-        assertThat(outputStringWriter.toString()).isEqualTo("Windows 10\r\n");
+    void testPrintsOperatingSystemName() {
+        String kernel = "Windows 10";
+        Command command = new UnameCommand(kernel);
+
+        command.execute(outputWriter, errorWriter, inputScanner);
+
+        assertThat(outputStringWriter.toString()).contains(kernel);
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 }

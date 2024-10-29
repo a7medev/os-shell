@@ -6,11 +6,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateCommand implements Command {
-    public static String NAME = "date";
+    public static final String NAME = "date";
+
+    private final LocalDateTime now;
+
+    public DateCommand(LocalDateTime now) {
+        this.now = now;
+    }
 
     @Override
-    public void execute (PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
-        LocalDateTime now = LocalDateTime.now();
+    public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, dd-MM-yyyy HH:mm:ss");
         String date = now.format(formatter);
 

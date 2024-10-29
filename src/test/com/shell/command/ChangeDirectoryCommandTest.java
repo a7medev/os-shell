@@ -43,6 +43,7 @@ class ChangeDirectoryCommandTest {
         interpreter = new CommandLineInterpreter(currentDirectory,
                 "user",
                 "/Users/user",
+                "Darwin",
                 outputWriter,
                 errorWriter,
                 inputScanner);

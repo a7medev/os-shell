@@ -35,15 +35,14 @@ public class UsersCommandTest {
     }
 
     @Test
-    void whenGivenArgument_printsIt() {
-        String example = "hello world";
+    void givenUserThenOutputsUser() {
+        String user = "alfy";
 
-        Command test = new UsersCommand();
-        test.execute(outputWriter, errorWriter, inputScanner);
+        Command command = new UsersCommand(user);
 
-        String currentUser = "Ahmed";
+        command.execute(outputWriter, errorWriter, inputScanner);
 
-        assertThat(outputStringWriter.toString()).isEqualTo(currentUser + "\r\n");
+        assertThat(outputStringWriter.toString()).contains(user);
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 }

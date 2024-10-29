@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,12 +37,12 @@ public class EchoCommandTest {
 
     @Test
     void whenGivenArgument_printsIt() {
-        String example = "hello world";
+        List<String> arguments = List.of("hello world");
 
-        Command test = new EchoCommand(example);
+        Command test = new EchoCommand(arguments);
         test.execute(outputWriter, errorWriter, inputScanner);
 
-        assertThat(outputStringWriter.toString()).isEqualTo("hello world\r\n");
+        assertThat(outputStringWriter.toString()).contains("hello world");
         assertThat(errorStringWriter.toString()).isEmpty();
     }
 }
