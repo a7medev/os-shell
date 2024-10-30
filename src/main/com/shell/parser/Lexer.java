@@ -10,11 +10,11 @@ public class Lexer {
     private int current = 0;
     private boolean isNextCommand = true;
 
-    Lexer(String source) {
+    public Lexer(String source) {
         this.source = source;
     }
 
-    List<Token> getTokens() {
+    public List<Token> getTokens() {
         while (!isAtEnd()) {
             start = current;
             getToken();
