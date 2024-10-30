@@ -40,7 +40,7 @@ public class ManualCommand implements Command {
     private void loadCommandManuals() {
         commandManuals.put("date", "date - Displays the current date and time.");
         commandManuals.put("echo", "echo - Displays a line of text.\n\nUsage:\n  echo [text]");
-        commandManuals.put("uname", "uname - Prints system information.\n\nOptions:\n  -a   All system information\n  -r   Kernel release\n  -n   Network node hostname");
+        commandManuals.put("uname", "uname - Prints system information.");
         commandManuals.put("users", "users - Prints the logged-in users.");
         commandManuals.put("who", "who - Shows who is logged on.");
         commandManuals.put("pwd", "pwd - Prints the current working directory.");
