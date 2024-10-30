@@ -10,8 +10,8 @@ public class Main {
         var user = System.getProperty("user.name");
         var kernel = System.getProperty("os.name");
 
-        try (var outputWriter = new PrintWriter(System.out);
-             var errorWriter = new PrintWriter(outputWriter);
+        try (var outputWriter = new PrintWriter(System.out, true);
+             var errorWriter = new PrintWriter(outputWriter, true);
              var inputScanner = new Scanner(System.in)) {
             var commandLineInterpreter = new CommandLineInterpreter(workingDirectory,
                     user,
