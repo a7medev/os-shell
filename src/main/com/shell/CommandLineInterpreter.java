@@ -131,7 +131,7 @@ public class CommandLineInterpreter {
             case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.isEmpty() ? "" : arguments.get(0), workingDirectory, this);
             case MakeDirectoryCommand.NAME -> new MakeDirectoryCommand(arguments, workingDirectory);
             case RemoveDirectoryCommand.NAME -> new RemoveDirectoryCommand(arguments, workingDirectory);
-            case ManualCommand.NAME -> new ManualCommand(arguments.isEmpty() ? null : arguments.get(0));
+            case ManualCommand.MAN_NAME, ManualCommand.HELP_NAME -> new ManualCommand(arguments.isEmpty() ? null : arguments.get(0));
             case UsersCommand.USERS_NAME, UsersCommand.WHO_NAME -> new UsersCommand(user);
             case UnameCommand.NAME -> new UnameCommand(kernel);
             case DateCommand.NAME -> new DateCommand(LocalDateTime.now());

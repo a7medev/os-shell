@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ManualCommand implements Command {
-    public static final String NAME = "man";
+    public static final String MAN_NAME = "man";
+    public static final String HELP_NAME = "help";
 
     private final String commandName;
     private final Map<String, String> commandManuals;
@@ -20,15 +21,18 @@ public class ManualCommand implements Command {
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         if (commandName == null || commandName.isEmpty()) {
-            errorWriter.println(NAME + ": Please specify a command to view the manual.");
+            for (Map.Entry<String, String> entry : commandManuals.entrySet()) {
+                outputWriter.println(entry.getValue());
+            }
             return;
         }
 
         String manual = commandManuals.get(commandName);
         if (manual != null) {
             outputWriter.println(manual);
+            outputWriter.println();
         } else {
-            errorWriter.println(NAME + ": No manual entry for " + commandName);
+            errorWriter.println(MAN_NAME + ": No manual entry for " + commandName);
         }
     }
 
