@@ -7,11 +7,11 @@ public class Parser {
     final List<Token> tokens;
     private int current = 0;
 
-    Parser(List<Token> tokens) {
+    public Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
 
-    Expression parse() {
+    public Expression parse() {
         return commandLine();
     }
 

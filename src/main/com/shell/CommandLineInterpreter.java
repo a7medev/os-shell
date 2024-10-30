@@ -1,6 +1,10 @@
 package com.shell;
 
 import com.shell.command.*;
+import com.shell.parser.Expression;
+import com.shell.parser.Lexer;
+import com.shell.parser.Parser;
+import com.shell.parser.Token;
 
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
@@ -18,6 +22,7 @@ public class CommandLineInterpreter {
     private final PrintWriter errorWriter;
     private final Scanner inputScanner;
     private boolean isRunning = true;
+
 
     public CommandLineInterpreter(String workingDirectory, String user, String home, String kernel, PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
         this.user = user;
@@ -60,29 +65,69 @@ public class CommandLineInterpreter {
             return;
         }
 
-        // Basic parsing until the ArgumentsParser is implemented.
-        // TODO: Replace this logic with the actual parsing logic.
-        // TODO: Handle ~ in file path to point to $HOME.
-        List<String> arguments = new ArrayList<>(List.of(input.split("\\s+")));
-        String commandName = arguments.remove(0);
+        Lexer lexer = new Lexer(input);
+        List<Token> tokens = lexer.getTokens();
+        Parser parser = new Parser(tokens);
+        Expression commands = parser.parse();
 
-        Command command = createCommand(commandName, arguments);
-
-        if (command == null) {
-            errorWriter.println("Unknown command: " + commandName);
-            return;
+        Command command = evaluateCommand(commands);
+        if (command != null) {
+            command.execute(outputWriter, errorWriter, inputScanner);
+        } else {
+            errorWriter.println("Unknown command");
         }
 
-        command.execute(outputWriter, errorWriter, inputScanner);
     }
 
-    private Command createCommand(String command, List<String> arguments) {
+    private Command evaluateCommand(Expression expression) {
+        if (expression instanceof Expression.Command commandExpression) {
+            String commandName = commandExpression.cmd();
+            List<String> arguments = commandExpression.args();
+            List<String> flags = commandExpression.flags();
+            Expression redirections = commandExpression.redirections();
+
+            Command command = createCommand(commandName, arguments, flags);
+
+            if (command == null) {
+                errorWriter.println("Unknown command: " + commandName);
+                return null;
+            }
+
+            return redirect(redirections, command);
+
+        } else if (expression instanceof Expression.PipedCommands pipedCommands) {
+            Expression left = pipedCommands.left();
+            Expression right = pipedCommands.right();
+
+            return new PipedCommand(evaluateCommand(left), evaluateCommand(right));
+        }
+
+        return null;
+    }
+
+    private Command redirect(Expression redirection, Command cmd) {
+        if (redirection instanceof Expression.OutputRedirection outputRedirection) {
+            String file = outputRedirection.file();
+            return new OutputRedirectionCommand(file, workingDirectory, cmd);
+        } else if (redirection instanceof Expression.AppendOutputRedirection appendOutputRedirection) {
+            String file = appendOutputRedirection.file();
+            return new AppendOutputRedirectionCommand(file, workingDirectory, cmd);
+        } else if (redirection instanceof Expression.InputRedirection inputRedirection) {
+            String file = inputRedirection.file();
+            return new InputRedirectionCommand(file, workingDirectory, cmd);
+        }
+
+        return cmd;
+    }
+
+
+    private Command createCommand(String command, List<String> arguments, List<String> flags) {
         return switch (command) {
             case MoveCommand.NAME -> new MoveCommand(arguments, false, workingDirectory);
             case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
             case RemoveCommand.NAME -> new RemoveCommand(arguments, false, true, workingDirectory);
             case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
-            case ListCommand.NAME -> new ListCommand(arguments,false, false, workingDirectory);
+            case ListCommand.NAME -> new ListCommand(arguments, false, false, workingDirectory);
             case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
             case PrintWorkingDirectoryCommand.NAME -> new PrintWorkingDirectoryCommand(workingDirectory);
             case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory, this);

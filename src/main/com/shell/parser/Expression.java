@@ -9,6 +9,8 @@ public sealed interface Expression {
     record PipedCommands(Expression left, Expression right) implements Expression {}
 
     record OutputRedirection(String file) implements Expression {}
+
     record AppendOutputRedirection(String file) implements Expression {}
+
     record InputRedirection(String file) implements Expression {}
 }
