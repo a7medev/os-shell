@@ -23,6 +23,7 @@ public class ManualCommand implements Command {
         if (commandName == null || commandName.isEmpty()) {
             for (Map.Entry<String, String> entry : commandManuals.entrySet()) {
                 outputWriter.println(entry.getValue());
+                outputWriter.println();
             }
             return;
         }
@@ -37,12 +38,11 @@ public class ManualCommand implements Command {
     }
 
     private void loadCommandManuals() {
-        commandManuals.put("clear", "clear - Clears the terminal screen.");
         commandManuals.put("date", "date - Displays the current date and time.");
         commandManuals.put("echo", "echo - Displays a line of text.\n\nUsage:\n  echo [text]");
-        commandManuals.put("uname", "uname - Prints system information.\n\nOptions:\n  -a   All system information\n  -r   Kernel release\n  -n   Network node hostname");
+        commandManuals.put("uname", "uname - Prints system information.");
         commandManuals.put("users", "users - Prints the logged-in users.");
-        commandManuals.put("who", "who - Shows who is logged on.\n\nOptions:\n  -a   All information\n  -b   Last boot time");
+        commandManuals.put("who", "who - Shows who is logged on.");
         commandManuals.put("pwd", "pwd - Prints the current working directory.");
         commandManuals.put("cd", "cd - Changes the current directory.\n\nUsage:\n  cd <directory>");
         commandManuals.put("ls", "ls - Lists directory contents.\n\nOptions:\n  -a   Show all files, including hidden files\n  -r   Reverse order");
@@ -54,8 +54,6 @@ public class ManualCommand implements Command {
         commandManuals.put("mv", "mv - Moves or renames files.\n\nUsage:\n  mv <source> <destination>");
         commandManuals.put("rm", "rm - Removes files or directories.\n\nUsage:\n  rm <file>\n\nOptions:\n  -r   Recursive removal for directories\n  -f   Force deletion without prompt");
         commandManuals.put("cat", "cat - Concatenates and displays file contents.\n\nUsage:\n  cat <file>");
-        commandManuals.put("more", "more - Displays file contents one screen at a time.\n\nUsage:\n  more <file>");
-        commandManuals.put("less", "less - Views file contents interactively.\n\nUsage:\n  less <file>");
         commandManuals.put(">", "> - Redirects output to a file, overwriting it.\n\nUsage:\n  command > <file>");
         commandManuals.put(">>", ">> - Appends output to the end of a file.\n\nUsage:\n  command >> <file>");
         commandManuals.put("<", "< - Redirects the input of a command to be taken from a file.\n\nUsage:\n  command < <file>");
