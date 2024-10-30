@@ -42,6 +42,7 @@ public class ManualCommand implements Command {
         commandManuals.put("echo", "echo - Displays a line of text.\n\nUsage:\n  echo [text]");
         commandManuals.put("uname", "uname - Prints system information.\n\nOptions:\n  -a   All system information\n  -r   Kernel release\n  -n   Network node hostname");
         commandManuals.put("users", "users - Prints the logged-in users.");
+        commandManuals.put("who", "who - Shows who is logged on.\n\nOptions:\n  -b   Last boot time");
         commandManuals.put("pwd", "pwd - Prints the current working directory.");
         commandManuals.put("cd", "cd - Changes the current directory.\n\nUsage:\n  cd <directory>");
         commandManuals.put("ls", "ls - Lists directory contents.\n\nOptions:\n  -a   Show all files, including hidden files\n  -r   Reverse order");
