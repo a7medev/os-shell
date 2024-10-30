@@ -11,15 +11,15 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public Expression parse() {
+    public Expression parse() throws UnexpectedTokenException {
         return commandLine();
     }
 
-    private Expression commandLine() {
+    private Expression commandLine() throws UnexpectedTokenException {
         return commandSequence();
     }
 
-    private Expression commandSequence() {
+    private Expression commandSequence() throws UnexpectedTokenException {
         Expression expr = command();
 
         Token pipe = new Token(TokenType.OPERATOR, "|");
@@ -32,8 +32,8 @@ public class Parser {
         return expr;
     }
 
-    private Expression command() {
-        String commandName = consume(TokenType.COMMAND, "");
+    private Expression command() throws UnexpectedTokenException {
+        String commandName = consume(TokenType.COMMAND);
         List<String> arguments = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         Expression redirections = null;
@@ -52,7 +52,7 @@ public class Parser {
 
         while (match(op1, op2, op3)) {
             Token operator = previous();
-            String file = consume(TokenType.PARAMETER, "");
+            String file = consume(TokenType.PARAMETER);
 
             redirections = switch (operator.value) {
                 case ">" -> new Expression.OutputRedirection(file);
@@ -98,13 +98,12 @@ public class Parser {
         return peek().type == tokenType;
     }
 
-    private String consume(TokenType tokenType, String message) {
-        if (check(tokenType)) {
-            return advance().value;
+    private String consume(TokenType tokenType) throws UnexpectedTokenException {
+        if (!check(tokenType)) {
+            throw new UnexpectedTokenException(peek().type, tokenType);
         }
 
-        //TODO: Throw an error if there is no string
-        return "";
+        return advance().value;
     }
 
     private Token advance() {

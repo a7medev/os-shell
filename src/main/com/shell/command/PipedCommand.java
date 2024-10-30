@@ -20,19 +20,22 @@ public class PipedCommand implements Command {
         PipedWriter pipedWriter = new PipedWriter();
         PipedReader pipedReader = new PipedReader();
 
-        PrintWriter writer = new PrintWriter(pipedWriter);
-        Scanner scanner = new Scanner(pipedReader);
         try {
             pipedWriter.connect(pipedReader);
         } catch (IOException error) {
-            errorWriter.println(error.getMessage());
+            errorWriter.println("Error: Failed to pipe commands.");
         }
 
         if (left != null) {
-            left.execute(writer, errorWriter, inputScanner);
+            try (PrintWriter writer = new PrintWriter(pipedWriter)) {
+                left.execute(writer, errorWriter, inputScanner);
+            }
         }
+
         if (right != null) {
-            right.execute(outputWriter, errorWriter, scanner);
+            try (Scanner scanner = new Scanner(pipedReader)) {
+                right.execute(outputWriter, errorWriter, scanner);
+            }
         }
     }
 }

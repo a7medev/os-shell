@@ -1,18 +1,16 @@
 package com.shell.parser;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ParserTest {
 
     @Test
-    void givenCommandWithoutPipesThenParserReturnsCorrectExpression() {
+    void givenCommandWithoutPipesThenParserReturnsCorrectExpression() throws UnexpectedTokenException {
         String src = "echo hello, world, hello, world > file1";
         Lexer lexer = new Lexer(src);
 
@@ -32,7 +30,7 @@ class ParserTest {
     }
 
     @Test
-    void givenCommandWithPipesThenParserReturnsCorrectExpression() {
+    void givenCommandWithPipesThenParserReturnsCorrectExpression() throws UnexpectedTokenException {
         String src = "cat file | sort | grep mahmoud";
         Lexer lexer = new Lexer(src);
 
@@ -59,7 +57,7 @@ class ParserTest {
     }
 
     @Test
-    void givenSingleCommandThenParserReturnsCorrectExpression() {
+    void givenSingleCommandThenParserReturnsCorrectExpression() throws UnexpectedTokenException {
         String src = "ls";
         Lexer lexer = new Lexer(src);
 

@@ -1,14 +1,10 @@
 package com.shell;
 
 import com.shell.command.*;
-import com.shell.parser.Expression;
-import com.shell.parser.Lexer;
-import com.shell.parser.Parser;
-import com.shell.parser.Token;
+import com.shell.parser.*;
 
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -68,15 +64,17 @@ public class CommandLineInterpreter {
         Lexer lexer = new Lexer(input);
         List<Token> tokens = lexer.getTokens();
         Parser parser = new Parser(tokens);
-        Expression commands = parser.parse();
 
-        Command command = evaluateCommand(commands);
-        if (command != null) {
-            command.execute(outputWriter, errorWriter, inputScanner);
-        } else {
-            errorWriter.println("Unknown command");
+        try {
+            Expression commands = parser.parse();
+
+            Command command = evaluateCommand(commands);
+            if (command != null) {
+                command.execute(outputWriter, errorWriter, inputScanner);
+            }
+        } catch (UnexpectedTokenException e) {
+            errorWriter.println(e.getMessage());
         }
-
     }
 
     private Command evaluateCommand(Expression expression) {
@@ -123,22 +121,21 @@ public class CommandLineInterpreter {
 
     private Command createCommand(String command, List<String> arguments, List<String> flags) {
         return switch (command) {
-            case MoveCommand.NAME -> new MoveCommand(arguments, false, workingDirectory);
-            case CatCommand.NAME -> new CatCommand(arguments.get(0), workingDirectory);
-            case RemoveCommand.NAME -> new RemoveCommand(arguments, false, true, workingDirectory);
+            case MoveCommand.NAME -> new MoveCommand(arguments, flags.contains("f"), workingDirectory);
+            case CatCommand.NAME -> new CatCommand(arguments.isEmpty() ? null : arguments.get(0), workingDirectory);
+            case RemoveCommand.NAME -> new RemoveCommand(arguments, flags.contains("f"), flags.contains("r"), workingDirectory);
             case TouchCommand.NAME -> new TouchCommand(arguments, workingDirectory);
-            case ListCommand.NAME -> new ListCommand(arguments, false, false, workingDirectory);
-            case CopyCommand.NAME -> new CopyCommand(arguments, false, workingDirectory);
+            case ListCommand.NAME -> new ListCommand(arguments, flags.contains("a"), flags.contains("r"), workingDirectory);
+            case CopyCommand.NAME -> new CopyCommand(arguments, flags.contains("f"), workingDirectory);
             case PrintWorkingDirectoryCommand.NAME -> new PrintWorkingDirectoryCommand(workingDirectory);
-            case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.get(0), workingDirectory, this);
+            case ChangeDirectoryCommand.NAME -> new ChangeDirectoryCommand(arguments.isEmpty() ? "" : arguments.get(0), workingDirectory, this);
             case MakeDirectoryCommand.NAME -> new MakeDirectoryCommand(arguments, workingDirectory);
             case RemoveDirectoryCommand.NAME -> new RemoveDirectoryCommand(arguments, workingDirectory);
-            case ManualCommand.NAME -> new ManualCommand(arguments.get(0));
+            case ManualCommand.NAME -> new ManualCommand(arguments.isEmpty() ? null : arguments.get(0));
             case UsersCommand.USERS_NAME, UsersCommand.WHO_NAME -> new UsersCommand(user);
             case UnameCommand.NAME -> new UnameCommand(kernel);
             case DateCommand.NAME -> new DateCommand(LocalDateTime.now());
             case EchoCommand.NAME -> new EchoCommand(arguments);
-            // FIXME: Do we need to refactor this to have a dedicated exit command? Will it need access to the CommandLineInterpreter?
             case "exit" -> (outputWriter, errorWriter, inputScanner) -> isRunning = false;
             default -> null;
         };
