@@ -19,6 +19,14 @@ public class CatCommand implements Command {
 
     @Override
     public void execute(PrintWriter outputWriter, PrintWriter errorWriter, Scanner inputScanner) {
+        if (filePath == null) {
+            while (inputScanner.hasNextLine()) {
+                String line = inputScanner.nextLine();
+                outputWriter.println(line);
+            }
+            return;
+        }
+
         File file = FileUtils.fileInWorkingDirectory(filePath, workingDirectory);
 
         if (file.isDirectory()) {
